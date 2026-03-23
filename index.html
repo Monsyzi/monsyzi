@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://file.garden/aT6vZ4PVCwXB1BNw/994f2c6ff2fc77fa65350b0ed08bbecd-removebg-preview.png" type="image/png">
+  <title>@ Monsy </title>
+  <style>
+    html, body { 
+      height: 100%; margin: 0; padding: 0; overflow-x: hidden; 
+      background: url('https://file.garden/aT6vZ4PVCwXB1BNw/70f36214474e38f74c62996ff6740daf.gif') no-repeat center center / cover;
+      background-attachment: fixed; 
+      color: #fff; font-family: 'Orbitron', sans-serif; 
+    }
+    #intro-panel {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(10px); font-size: 13px; color: #fff; cursor: pointer; transition: opacity 0.6s ease; z-index: 999;
+      letter-spacing: 5px;
+    }
+    .intro-text { opacity: 0.9; }
+    .content { 
+      display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; 
+      padding: 10px; text-align: center; 
+    }
+    .top-logo { width: 100px; height: auto; margin: 20px auto 15px; transition: transform 0.3s; }
+    .top-logo:hover { transform: scale(1.1); }
+    .main-title { 
+      font-size: 32px; margin: 10px 0 30px; 
+      background: linear-gradient(to right, #fcfcfc, #ffffff, #f9f9f9);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; 
+      animation: infiniteGradient 6s linear infinite; letter-spacing: 2px; 
+    }
+    .profile { position: relative; display: flex; flex-direction: column; align-items: center; margin: 20px auto; }
+    .profile-pic { 
+      width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.15);
+      box-shadow: 0 0 20px rgba(255,255,255,0.2); transition: transform 0.3s; cursor: pointer; 
+    }
+    .profile-pic:hover { transform: scale(1.1); }
+    .status-dot { position: absolute; bottom: 8px; right: 8px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #000; }
+    .status-online { background: #43b581; } .status-idle { background: #faa61a; } .status-dnd { background: #f04747; } .status-offline { background: #747f8d; }
+    .profile-info { 
+      position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-10px) scale(0.9); width: 240px; padding: 10px;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #eee;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.8); opacity: 0; pointer-events: none; transition: all 0.3s; font-size: 13px; text-align: left; 
+    }
+    .profile:hover .profile-info { opacity: 1; transform: translateX(-50%) translateY(-15px) scale(1); pointer-events: auto; }
+    .info-avatar { width: 40px; height: 40px; border-radius: 50%; float: left; margin-right: 10px; border: 2px solid rgba(255,255,255,0.2); }
+    .name-row { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 15px; }
+
+    /* ────────────────────────────────────────────────
+       SPOTIFY WIDGET - LANDSCAPE STYLE (exact katulad ng picture mo)
+    ──────────────────────────────────────────────── */
+    .spotify-widget {
+      width: 100px;
+      max-width: 95%;
+      height: 80px;
+      background: #000;
+      border-radius: 12px;
+      padding: 0 16px;
+      margin: 25px auto;
+      display: none;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+      overflow: hidden;
+      border: 1px solid #222;
+    }
+
+    .spotify-album {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      margin-right: 16px;
+    }
+
+    .spotify-album img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .spotify-main-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .spotify-song-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #fff;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .spotify-song-artist {
+      font-size: 12px;
+      color: #bbb;
+      margin: 2px 0 0 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .spotify-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .spotify-play-pause {
+      font-size: 20px;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.9;
+    }
+
+    .spotify-play-pause:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    /* ──────────────────────────────────────────────── */
+
+    .blinking-notes { 
+      font-size: 14px; color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.8); 
+      animation: subtleBlink 2s infinite alternate; margin: 10px auto; display: block; max-width: 280px; 
+    }
+    @keyframes subtleBlink { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+
+    .custom-media { 
+      width: 280px; max-width: 90%;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px;
+      margin: 15px auto;
+      color: #ddd;
+      font-size: 13px;
+    }
+
+    .social-links {
+      display: flex; justify-content: center; gap: 18px; margin: 15px auto 25px;
+      flex-wrap: wrap; max-width: 300px;
+    }
+    .social-icon {
+      width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+      text-decoration: none; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.12);
+    }
+    .social-icon svg {
+      width: 24px; height: 24px; fill: #fff;
+    }
+    .social-icon:hover {
+      transform: scale(1.15); background: rgba(255,255,255,0.15); box-shadow: 0 0 15px rgba(255,255,255,0.25);
+    }
+
+    .views-badge { 
+      font-size: 13px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2); 
+      padding: 8px 16px; border-radius: 20px; backdrop-filter: blur(8px); letter-spacing: 1px; 
+      margin: 20px auto 30px; 
+    }
+
+    .typing-caret { border-right: .12em solid #ff69b4; animation: blink-caret 800ms step-end infinite; }
+    @keyframes infiniteGradient { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
+    @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #ff69b4; } }
+  </style>
+</head>
+<body>
+  <div id="intro-panel"><div class="intro-text">click</div></div>
+
+  <div class="content">
+    <img class="top-logo" src="https://file.garden/aT6vZ4PVCwXB1BNw/994f2c6ff2fc77fa65350b0ed08bbecd-removebg-preview.png" alt="Logo">
+    <h1 class="main-title" id="main-title"></h1>
+
+    <div class="profile" id="profile-container"></div>
+
+    <!-- LANDSCAPE SPOTIFY WIDGET -->
+    <div id="spotify-widget" class="spotify-widget">
+      <div class="spotify-album">
+        <img src="" alt="Album Art">
+      </div>
+      <div class="spotify-main-info">
+        <div class="spotify-song-title">Loading...</div>
+        <div class="spotify-song-artist"></div>
+      </div>
+      <div class="spotify-controls">
+        <div class="spotify-play-pause">⏸︎</div>
+      </div>
+    </div>
+
+    <div id="blinking-notes" class="blinking-notes"></div>
+
+    <div class="social-links">
+      <a href="https://instagram.com/monsyzi" target="_blank" class="social-icon" title="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      <a href="https://tiktok.com/@xxxmnxi" target="_blank" class="social-icon" title="TikTok">
+          <svg viewBox="0 0 24 24">
+        <path d="M16.7 0h-3.1v14.2a3.1 3.1 0 1 1-2.6-3.06V8.1a6.2 6.2 0 1 0 5.7 6.2V7.2a7.4 7.4 0 0 0 4.3 1.4V5.6a4.3 4.3 0 0 1-4.3-4.3z"/>
+      </svg>
+        <a href="https://open.spotify.com/user/MonsyWest" target="_blank" class="social-icon" title="Spotify">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.52 17.34c-.23.38-.72.5-1.1.27-3.02-1.85-6.82-2.27-11.3-1.25-.44.1-.88-.17-.98-.61-.1-.44.17-.88.61-.98 4.89-1.11 9.06-.64 12.45 1.42.38.23.5.72.27 1.1zm1.57-3.49c-.29.47-.9.62-1.37.33-3.46-2.13-8.73-2.75-12.82-1.51-.53.16-1.09-.14-1.25-.67-.16-.53.14-1.09.67-1.25 4.67-1.42 10.47-.72 14.47 1.76.47.29.62.9.33 1.37zm.13-3.63c-4.15-2.46-11-2.69-14.96-1.49-.63.19-1.29-.17-1.48-.8-.19-.63.17-1.29.8-1.48 4.55-1.38 12.1-1.12 16.89 1.73.58.34.77 1.09.43 1.67-.34.58-1.09.77-1.67.43z"/>
+    </svg>
+    </a>
+      <a href="https://discord.gg/1461546126581960776" target="_blank" class="social-icon" title="Discord">
+        <svg viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3853-.3969-.8748-.6083-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8851 1.515.0699.0699 0 00-.032.0277C.5336 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0775.0105c.1202.099.246.1981.372.2914a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6061 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+      </a>
+    </div>
+
+    <div class="custom-media">
+      <h3 style="margin:0 0 8px; text-align:center; font-size:14px;">Spotify</h3>
+      <img src="x" alt="@ Moolah " style="width:100%; border-radius:8px; margin-bottom:8px;">
+      <p style="text-align:center; margin:0; font-size:12px;">- Scoop Dog - Daarth</p>
+    </div>
+
+    <div class="views-badge">Views: <span id="view-count">0</span></div>
+  </div>
+
+  <audio id="intro-audio" src="https://file.garden/acCjjUC7xVwvYa8G/MOOLAH%20-%20SCOOP%20DOGG%2C%20DAARTH.mp3" loop></audio>
+
+  <script>
+    const introPanel = document.getElementById("intro-panel");
+    const content = document.querySelector(".content");
+    const audio = document.getElementById("intro-audio");
+    const profileContainer = document.getElementById("profile-container");
+    const spotifyWidget = document.getElementById("spotify-widget");
+    const blinkingNotes = document.getElementById("blinking-notes");
+    const TITLE_TEXT = "@ Monsy";
+
+    function typeWriter(el, text) {
+      el.classList.add('typing-caret'); el.textContent = ''; let i = 0;
+      const type = () => { if (i < text.length) { el.textContent += text.charAt(i); i++; setTimeout(type, 80); } else el.classList.remove('typing-caret'); };
+      setTimeout(type, 600);
+    }
+
+    function formatTime(ms) {
+      if (!ms || ms < 0) return "0:00";
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    introPanel.addEventListener("click", () => {
+      audio.volume = 0; audio.play().catch(() => {});
+      let fade = setInterval(() => { if (audio.volume < 0.6) audio.volume += 0.02; else clearInterval(fade); }, 80);
+      introPanel.style.opacity = 0;
+      setTimeout(() => { introPanel.style.display = "none"; content.style.display = "flex"; typeWriter(document.getElementById("main-title"), TITLE_TEXT); }, 700);
+    });
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('https://api.lanyard.rest/v1/users/1461546126581960776');
+        const { data, success } = await res.json();
+        if (!success) return;
+
+        const user = data.discord_user;
+        const status = data.discord_status || 'offline';
+        const statusClass = { online: 'status-online', idle: 'status-idle', dnd: 'status-dnd', offline: 'status-offline' }[status] || 'status-offline';
+
+        const avatar = user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}${user.avatar.startsWith('a_') ? '.gif' : '.png'}?size=512`
+          : `https://cdn.discordapp.net/embed/avatars/${parseInt(user.discriminator || 0) % 5}.png`;
+
+        let customStatus = '';
+        let spotifyHTML = '';
+
+        data.activities?.forEach(act => {
+          if (act.type === 4) customStatus = act.state || '';
+          if (act.type === 2 && act.timestamps?.start) {
+            const albumArt = act.assets?.large_image 
+              ? `https://i.scdn.co/image/${act.assets.large_image.split(':')[1] || ''}` 
+              : 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg';
+
+            const elapsed = Date.now() - act.timestamps.start;
+            const duration = act.timestamps.end ? (act.timestamps.end - act.timestamps.start) : 0;
+
+            const current = formatTime(elapsed);
+            const total = formatTime(duration);
+            const progressPercent = duration > 0 ? Math.min((elapsed / duration) * 100, 100) : 0;
+
+            spotifyHTML = `
+              <div class="spotify-album">
+                <img src="${albumArt}" alt="Album Art">
+              </div>
+              <div class="spotify-main-info">
+                <div class="spotify-song-title">${act.details || 'Unknown Song'}</div>
+                <div class="spotify-song-artist">${act.state || 'Unknown Artist'}</div>
+              </div>
+              <div class="spotify-controls">
+                <div class="spotify-play-pause">⏸︎</div>
+              </div>`;
+
+            spotifyWidget.innerHTML = spotifyHTML;
+            spotifyWidget.style.display = 'flex';
+          }
+        });
+
+        if (customStatus) blinkingNotes.textContent = customStatus;
+
+        profileContainer.innerHTML = `
+          <img class="profile-pic" src="${avatar}" alt="${user.global_name || user.username}">
+          <div class="status-dot ${statusClass}"></div>
+          <div class="profile-info">
+            <img src="${avatar}" class="info-avatar">
+            <div class="name-row">
+              <span>${user.global_name || user.username}</span>
+              <span class="status-dot ${statusClass}"></span>
+            </div>
+            <div style="opacity:0.8; font-size:12px;">@${user.username}</div>
+            ${customStatus ? `<div style="margin-top:6px; opacity:0.9; font-size:12px;">${customStatus}</div>` : ''}
+          </div>`;
+      } catch (e) { console.error(e); }
+    }
+
+    loadProfile();
+    setInterval(loadProfile, 30000);
+
+    document.addEventListener("contextmenu", e => e.preventDefault());
+    document.addEventListener("keydown", e => {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) || (e.ctrlKey && e.key === "U")) e.preventDefault();
+    });
+  </script>
+
+  <!-- Firebase Views -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = { 
+      apiKey: "AIzaSyCGPKvVPL8IgBTjJ8BV8LLs5RjHg97--WI", 
+      authDomain: "siteviews-6ac5c.firebaseapp.com", 
+      projectId: "siteviews-6ac5c",
+      storageBucket: "siteviews-6ac5c.firebasestorage.app", 
+      messagingSenderId: "963960122654", 
+      appId: "1:963960122654:web:f66c892cddac2a7adead0f", 
+      measurementId: "G-7MCK42ZD0G" 
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const counterDoc = db.collection('counters').doc('visitorCount');
+    async function incrementVisitorCount() {
+      try {
+        const newCount = await db.runTransaction(async (t) => {
+          const doc = await t.get(counterDoc);
+          const count = doc.exists ? (doc.data().count || 0) + 1 : 1;
+          t.set(counterDoc, { count }, { merge: true });
+          return count;
+        });
+        document.getElementById('view-count').innerText = newCount;
+      } catch (e) { document.getElementById('view-count').innerText = "Error"; }
+    }
+    incrementVisitorCount();
+  </script>
+</body>
+</html>
